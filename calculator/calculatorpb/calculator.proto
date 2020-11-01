@@ -5,14 +5,14 @@ option go_package="github.com/diegoclair/grpc-go-course/calculator/calculatorpb"
 
 service CalculatorService{
     // Unary
-    rpc Sum(CalculatorRequest) returns (CalculatorResponse){}
+    rpc Sum(SumRequest) returns (SumResponse){}
 }
 
-message CalculatorRequest {
+message SumRequest {
     int32 first_number = 1;
     int32 second_number = 2;
 }
 
-message CalculatorResponse {
+message SumResponse {
     int64 result = 1;
 }

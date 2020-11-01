@@ -31,7 +31,7 @@ func doUnaryRequest(c calculatorpb.CalculatorServiceClient) {
 
 	fmt.Println("Starting to do a Unary RPC...")
 
-	req := &calculatorpb.CalculatorRequest{
+	req := &calculatorpb.SumRequest{
 		FirstNumber:  7,
 		SecondNumber: 8,
 	}
