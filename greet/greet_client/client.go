@@ -42,5 +42,5 @@ func doUnaryRequest(c greetpb.GreetServiceClient) {
 	if err != nil {
 		log.Fatalf("Error while calling Greet RPC: %v", err)
 	}
-	log.Printf("Response from Greet: %v", res.Result)
+	log.Printf("Response from Greet: %v", res.GetResult())
 }
