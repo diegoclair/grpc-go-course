@@ -9,10 +9,14 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	addressHost = "localhost:50051"
+)
+
 func main() {
 
 	fmt.Println("Hello I'm a client")
-	cc, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	cc, err := grpc.Dial(addressHost, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("could not connect: %v", err)
 	}

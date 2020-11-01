@@ -11,6 +11,10 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	port = ":50051"
+)
+
 type server struct {
 	greetpb.UnimplementedGreetServiceServer
 }
@@ -30,7 +34,7 @@ func (s *server) Greet(ctx context.Context, req *greetpb.GreetRequest) (*greetpb
 func main() {
 	fmt.Println("Hello world")
 
-	lis, err := net.Listen("tcp", "0.0.0.0:50051")
+	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
