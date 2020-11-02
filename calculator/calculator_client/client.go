@@ -28,7 +28,8 @@ func main() {
 
 	//doUnaryRequest(c)
 	//doServerStreamingRequest(c)
-	doClientStreamingRequest(c)
+	//doClientStreamingRequest(c)
+	doBiDiStreamingRequest(c)
 }
 
 func doUnaryRequest(c calculatorpb.CalculatorServiceClient) {
@@ -96,4 +97,69 @@ func doClientStreamingRequest(c calculatorpb.CalculatorServiceClient) {
 	}
 
 	log.Printf("ComputeAverage response: %v", res.GetResult())
+}
+
+func doBiDiStreamingRequest(c calculatorpb.CalculatorServiceClient) {
+
+	fmt.Println("Starting to do a Bi Directional Streaming RPC...")
+
+	req := []*calculatorpb.FindMaximumRequest{
+		{
+			Number: 1,
+		},
+		{
+			Number: 5,
+		},
+		{
+			Number: 3,
+		},
+		{
+			Number: 6,
+		},
+		{
+			Number: 2,
+		},
+		{
+			Number: 20,
+		},
+	}
+
+	// we create a stream by invoking the client
+	stream, err := c.FindMaximum(context.Background())
+	if err != nil {
+		log.Fatalf("Error while calling GreetEveryone RPC: %v", err)
+	}
+
+	//we don't need to use go routine, but in this case is good to see the request and receiving doing at the same time (parallel)
+
+	// we send a bunch of messages to the client (go routine)
+	waitChannel := make(chan struct{})
+	go func() {
+		for i := range req {
+			fmt.Printf("Sending message: %v\n", req[i])
+			stream.Send(req[i])
+			time.Sleep(1 * time.Second)
+		}
+		stream.CloseSend()
+	}()
+
+	// we receive a bunch of messages from the server (go routine)
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				//we've reached the end of the stream
+				break
+			}
+			if err != nil {
+				log.Fatalf("Error while receiving data from the server: %s", err)
+				break
+			}
+			fmt.Printf("Received: %v\n", res.GetMaximum())
+		}
+		close(waitChannel)
+	}()
+
+	// block until everything is done
+	<-waitChannel
 }

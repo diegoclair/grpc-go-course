@@ -12,6 +12,9 @@ service CalculatorService{
 
     // ClientStreaming
     rpc ComputeAverage(stream ComputeAverageRequest) returns (ComputeAverageResponse) {};
+
+    // Bi Directional Streaming
+    rpc FindMaximum (stream FindMaximumRequest) returns (stream FindMaximumResponse) {};
 }
 
 message SumRequest {
@@ -37,4 +40,12 @@ message ComputeAverageRequest{
 
 message ComputeAverageResponse{
     float result = 1;
+}
+
+message FindMaximumRequest{
+    int64 number = 1;
+}
+
+message FindMaximumResponse{
+    int64 maximum = 1;
 }
