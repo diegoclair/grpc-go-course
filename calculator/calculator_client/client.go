@@ -103,27 +103,6 @@ func doBiDiStreamingRequest(c calculatorpb.CalculatorServiceClient) {
 
 	fmt.Println("Starting to do a Bi Directional Streaming RPC...")
 
-	req := []*calculatorpb.FindMaximumRequest{
-		{
-			Number: 1,
-		},
-		{
-			Number: 5,
-		},
-		{
-			Number: 3,
-		},
-		{
-			Number: 6,
-		},
-		{
-			Number: 2,
-		},
-		{
-			Number: 20,
-		},
-	}
-
 	// we create a stream by invoking the client
 	stream, err := c.FindMaximum(context.Background())
 	if err != nil {
@@ -135,9 +114,12 @@ func doBiDiStreamingRequest(c calculatorpb.CalculatorServiceClient) {
 	// we send a bunch of messages to the client (go routine)
 	waitChannel := make(chan struct{})
 	go func() {
-		for i := range req {
-			fmt.Printf("Sending message: %v\n", req[i])
-			stream.Send(req[i])
+		numbers := []int64{4, 7, 2, 19, 4, 6, 32}
+		for i := range numbers {
+			fmt.Printf("Sending message: %v\n", numbers[i])
+			stream.Send(&calculatorpb.FindMaximumRequest{
+				Number: numbers[i],
+			})
 			time.Sleep(1 * time.Second)
 		}
 		stream.CloseSend()
