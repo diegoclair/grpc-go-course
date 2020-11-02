@@ -8,8 +8,10 @@ service CalculatorService{
     rpc Sum(SumRequest) returns (SumResponse){}
     
     // ServerStreaming
-    rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) 
-    returns (stream PrimeNumberDecompositionResponse) {};
+    rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) returns (stream PrimeNumberDecompositionResponse) {};
+
+    // ClientStreaming
+    rpc ComputeAverage(stream ComputeAverageRequest) returns (ComputeAverageResponse) {};
 }
 
 message SumRequest {
@@ -27,4 +29,12 @@ message PrimeNumberDecompositionRequest{
 
 message PrimeNumberDecompositionResponse{
     int64 prime_factor = 1;
+}
+
+message ComputeAverageRequest{
+    int64 number = 1;
+}
+
+message ComputeAverageResponse{
+    float result = 1;
 }
