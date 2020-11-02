@@ -83,12 +83,16 @@ func (s *server) GreetEveryone(stream greetpb.GreetService_GreetEveryoneServer) 
 	fmt.Printf("GreetEveryone function was invoked with a streaming request\n")
 
 	for {
-		req, err := s.receiveRequest(stream)
+		firstName, err := s.getFirstNameFromRequest(stream)
+		if err == io.EOF {
+			return nil //we've reached the end of the stream
+		}
 		if err != nil {
+			log.Fatalf("Error while reading client stream request: %v", err)
 			return err
 		}
 
-		err = s.processResponse(stream, req)
+		err = s.processResponse(stream, firstName)
 		if err != nil {
 			return err
 		}
@@ -96,25 +100,19 @@ func (s *server) GreetEveryone(stream greetpb.GreetService_GreetEveryoneServer) 
 
 }
 
-func (s *server) receiveRequest(stream greetpb.GreetService_GreetEveryoneServer) (result string, err error) {
+func (s *server) getFirstNameFromRequest(stream greetpb.GreetService_GreetEveryoneServer) (result string, err error) {
 	req, err := stream.Recv()
-	if err == io.EOF {
-		//we've reached the end of the stream
-		return result, nil
-	}
 	if err != nil {
-		log.Fatalf("Error while reading client stream: %v", err)
 		return result, err
 	}
 	firstName := req.GetGreeting().GetFirstName()
-	result += "Hello " + firstName + "! "
 
-	return result, nil
+	return firstName, nil
 }
 
-func (s *server) processResponse(stream greetpb.GreetService_GreetEveryoneServer, req string) (err error) {
+func (s *server) processResponse(stream greetpb.GreetService_GreetEveryoneServer, firstName string) (err error) {
 
-	resBody := req
+	resBody := "Hello " + firstName + "! "
 
 	err = stream.Send(&greetpb.GreetEveryoneResponse{
 		Result: resBody,
