@@ -6,6 +6,10 @@ option go_package="github.com/diegoclair/grpc-go-course/calculator/calculatorpb"
 service CalculatorService{
     // Unary
     rpc Sum(SumRequest) returns (SumResponse){}
+    
+    // ServerStreaming
+    rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) 
+    returns (stream PrimeNumberDecompositionResponse) {};
 }
 
 message SumRequest {
@@ -15,4 +19,12 @@ message SumRequest {
 
 message SumResponse {
     int64 result = 1;
+}
+
+message PrimeNumberDecompositionRequest{
+    int64 number = 1;
+}
+
+message PrimeNumberDecompositionResponse{
+    int64 prime_factor = 1;
 }
