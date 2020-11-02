@@ -137,7 +137,7 @@ func doBiDiStreamingRequest(c calculatorpb.CalculatorServiceClient) {
 				log.Fatalf("Error while receiving data from the server: %s", err)
 				break
 			}
-			fmt.Printf("Received: %v\n", res.GetMaximum())
+			fmt.Printf("Received a new maximum of...: %v\n", res.GetMaximum())
 		}
 		close(waitChannel)
 	}()
