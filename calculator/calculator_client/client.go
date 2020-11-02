@@ -127,7 +127,7 @@ func doBiDiStreamingRequest(c calculatorpb.CalculatorServiceClient) {
 	// we create a stream by invoking the client
 	stream, err := c.FindMaximum(context.Background())
 	if err != nil {
-		log.Fatalf("Error while calling GreetEveryone RPC: %v", err)
+		log.Fatalf("Error while opening stream and calling FindMaximum RPC: %v", err)
 	}
 
 	//we don't need to use go routine, but in this case is good to see the request and receiving doing at the same time (parallel)
