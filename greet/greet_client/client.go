@@ -29,7 +29,8 @@ func main() {
 
 	//doUnaryRequest(c)
 	//doServerStreamingRequest(c)
-	doClientStreamingRequest(c)
+	//doClientStreamingRequest(c)
+	doBiDiStreamingRequest(c)
 }
 
 func doUnaryRequest(c greetpb.GreetServiceClient) {
@@ -126,4 +127,73 @@ func doClientStreamingRequest(c greetpb.GreetServiceClient) {
 		log.Fatalf("Error while receiving response for LongGreet: %v", err)
 	}
 	log.Printf("LongGreet response: %v\n", res)
+}
+
+func doBiDiStreamingRequest(c greetpb.GreetServiceClient) {
+
+	fmt.Println("Starting to do a Bi Directional Streaming RPC...")
+
+	req := []*greetpb.GreetEveryoneRequest{
+		{
+			Greeting: &greetpb.Greeting{
+				FirstName: "Diego Clair",
+				LastName:  "Rodrigues",
+			},
+		},
+		{
+			Greeting: &greetpb.Greeting{
+				FirstName: "Marcos",
+			},
+		},
+		{
+			Greeting: &greetpb.Greeting{
+				FirstName: "Maria",
+			},
+		},
+		{
+			Greeting: &greetpb.Greeting{
+				FirstName: "Pedro",
+			},
+		},
+	}
+
+	// we create a stream by invoking the client
+	stream, err := c.GreetEveryone(context.Background())
+	if err != nil {
+		log.Fatalf("Error while calling GreetEveryone RPC: %v", err)
+	}
+
+	//we don't need to use go routine, but in this case is good to see the request and receiving doing at the same time (parallel)
+
+	// we send a bunch of messages to the client (go routine)
+	waitChannel := make(chan struct{})
+	go func() {
+		for i := range req {
+			fmt.Printf("Sending message: %v\n", req[i])
+			stream.Send(req[i])
+			time.Sleep(1 * time.Second)
+		}
+		stream.CloseSend()
+	}()
+
+	// we receive a bunch of messages from the server (go routine)
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				//we've reached the end of the stream
+				break
+			}
+			if err != nil {
+				log.Fatalf("Error while receiving data from the server: %s", err)
+				break
+			}
+			fmt.Printf("Received: %v\n", res.GetResult())
+		}
+		close(waitChannel)
+	}()
+
+	// block until everything is done
+	<-waitChannel
+
 }
