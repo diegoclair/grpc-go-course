@@ -114,7 +114,10 @@ func doClientStreamingRequest(c greetpb.GreetServiceClient) {
 	//we interate over our slice and send each message individually
 	for i := range req {
 		fmt.Printf("Send request: %v\n", req[i])
-		stream.Send(req[i])
+		err := stream.Send(req[i])
+		if err != nil {
+			log.Fatalf("Error while sending streaming data to server: %v", err)
+		}
 		time.Sleep(1 * time.Second)
 	}
 

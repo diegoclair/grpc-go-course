@@ -45,7 +45,10 @@ func (s *server) GreetManyTimes(req *greetpb.GreetManyTimesRequest, stream greet
 	for i := 0; i < 10; i++ {
 		result := "Hello " + firstName + " - number " + strconv.Itoa(i)
 		res.Result = result
-		stream.Send(res)
+		err := stream.Send(res)
+		if err != nil {
+			return err
+		}
 		time.Sleep(1 * time.Second)
 	}
 

@@ -43,7 +43,11 @@ func (s *server) PrimeNumberDecomposition(req *calculatorpb.PrimeNumberDecomposi
 	for n > 1 {
 		if n%divisor == 0 {
 			res.PrimeFactor = int64(divisor)
-			stream.Send(res)
+			err := stream.Send(res)
+			if err != nil {
+				return err
+			}
+
 			n = n / divisor
 		} else {
 			divisor++
@@ -71,6 +75,7 @@ func (s *server) ComputeAverage(stream calculatorpb.CalculatorService_ComputeAve
 		}
 		if err != nil {
 			log.Fatalf("Error while reading client stream: %v", err)
+			return err
 		}
 
 		sum += res.GetNumber()
