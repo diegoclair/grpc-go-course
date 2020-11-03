@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"net"
 
 	"github.com/diegoclair/grpc-go-course/calculator/calculatorpb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -132,6 +135,22 @@ func (s *server) processResponse(stream calculatorpb.CalculatorService_FindMaxim
 	}
 
 	return nil
+}
+
+func (s *server) SquareRoot(ctx context.Context, req *calculatorpb.SquareRootRequest) (numberRoot *calculatorpb.SquareRootResponse, err error) {
+
+	//function that return a status error to client
+	number := req.GetNumber()
+
+	if number < 0 {
+		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("The number cannot be negative: %v", number))
+	}
+
+	numberRoot = &calculatorpb.SquareRootResponse{
+		NumberRoot: math.Sqrt(float64(number)),
+	}
+
+	return numberRoot, nil
 }
 
 func main() {
