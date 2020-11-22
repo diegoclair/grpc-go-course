@@ -11,6 +11,7 @@ import (
 	"github.com/diegoclair/grpc-go-course/calculator/calculatorpb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 )
 
@@ -162,6 +163,14 @@ func main() {
 
 	s := grpc.NewServer()
 	calculatorpb.RegisterCalculatorServiceServer(s, &server{})
+
+	reflection.Register(s)
+	//we can use evans to see the reflections
+	//	example: start the server and from the terminal enter the command: evans -p 50051 -r
+	//	inside of evans you can run commands like: show service
+	//	you can call a rpc, like: call Sum   and it will do the request
+	//	if you are doing some streaming request, you can type ctrl+D to stop to send data
+	//	docs: https://github.com/ktr0731/evans
 
 	fmt.Println("Server listening on port: ", port)
 	if err := s.Serve(lis); err != nil {
