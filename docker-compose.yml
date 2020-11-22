@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  
+  db:
+    image: mongo
+    container_name: 'blog-mongo-container'
+    environment:
+      - MONGO_INITDB_DATABASE=blog
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+    volumes: 
+    - ./blog/dbdata:/data/db
+    ports: 
+      - '27017-27019:27017-27019'
