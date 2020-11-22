@@ -18,6 +18,8 @@ const (
 )
 
 func main() {
+
+	// https://grpc.io/docs/guides/auth/ -> here we can see the docs explaining how to use insecure connection and with TLS
 	fmt.Println("Hello I'm a client")
 	cc, err := grpc.Dial(addressHost, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
